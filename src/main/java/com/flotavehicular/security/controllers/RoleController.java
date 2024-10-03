@@ -35,7 +35,7 @@ public class RoleController {
     }
 
     @PostMapping("/change-role")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> changeUserRole(@RequestBody @Valid ChangeRoleRequestDTO changeRoleRequestDTO) {
         roleService.changeRole(changeRoleRequestDTO);
         return ResponseEntity.ok().build();
