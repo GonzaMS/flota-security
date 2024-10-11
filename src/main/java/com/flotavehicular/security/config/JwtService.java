@@ -1,9 +1,10 @@
 package com.flotavehicular.security.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${security.jwt.token-expiration}")
@@ -73,9 +75,27 @@ public class JwtService {
                 .compact();
     }
 
+//    public Boolean isTokenValid(String token, UserDetails userDetails) {
+//        final String username = extractUsername(token);
+//        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+//    }
+
     public Boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        try {
+            final String username = extractUsername(token);
+            return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        } catch (SignatureException e) {
+            log.error("Firma JWT no válida: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Token JWT malformado: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("El token JWT ha expirado: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("Token JWT no soportado: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string vacío: {}", e.getMessage());
+        }
+        return false;
     }
 
     private boolean isTokenExpired(String token) {

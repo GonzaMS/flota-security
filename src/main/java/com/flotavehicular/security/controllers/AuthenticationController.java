@@ -1,9 +1,9 @@
 package com.flotavehicular.security.controllers;
 
-import com.flotavehicular.security.dto.AuthenticationRequestDTO;
-import com.flotavehicular.security.dto.AuthenticationResponseDTO;
-import com.flotavehicular.security.dto.RegistrationRequestDTO;
 import com.flotavehicular.security.services.impl.AuthenticationServiceImpl;
+import com.proyecto.flotavehicular_webapp.dto.security.AuthenticationRequestDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.AuthenticationResponseDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.RegistrationRequestDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -39,4 +39,17 @@ public class AuthenticationController {
             @RequestBody @Valid AuthenticationRequestDTO token) {
         return ResponseEntity.ok(authenticationServiceImpl.authenticate(token));
     }
+
+//    @PostMapping("/logout")
+//    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken) {
+//        authenticationServiceImpl.logout(accessToken);
+//        return ResponseEntity.ok("Logout successful");
+//    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validate(@RequestHeader("Authorization") String token) {
+        boolean isValid = authenticationServiceImpl.validateToken(token);
+        return ResponseEntity.ok(isValid);
+    }
+
 }

@@ -1,8 +1,8 @@
 package com.flotavehicular.security.controllers;
 
-import com.flotavehicular.security.dto.ChangeRoleRequestDTO;
-import com.flotavehicular.security.dto.RoleRequestDTO;
 import com.flotavehicular.security.services.IRoleService;
+import com.proyecto.flotavehicular_webapp.dto.security.ChangeRoleRequestDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.RoleRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

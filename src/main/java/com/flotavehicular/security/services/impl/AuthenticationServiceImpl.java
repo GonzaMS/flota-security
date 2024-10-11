@@ -1,16 +1,16 @@
 package com.flotavehicular.security.services.impl;
 
 import com.flotavehicular.security.config.JwtService;
-import com.flotavehicular.security.dto.AuthenticationRequestDTO;
-import com.flotavehicular.security.dto.AuthenticationResponseDTO;
-import com.flotavehicular.security.dto.RegistrationRequestDTO;
 import com.flotavehicular.security.enums.EmailTemplateName;
-import com.flotavehicular.security.models.Role;
-import com.flotavehicular.security.models.Token;
-import com.flotavehicular.security.models.User;
 import com.flotavehicular.security.repositories.IRoleRepository;
 import com.flotavehicular.security.repositories.ITokenRepository;
 import com.flotavehicular.security.repositories.IUserRepository;
+import com.proyecto.flotavehicular_webapp.dto.security.AuthenticationRequestDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.AuthenticationResponseDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.RegistrationRequestDTO;
+import com.proyecto.flotavehicular_webapp.models.Security.Role;
+import com.proyecto.flotavehicular_webapp.models.Security.Token;
+import com.proyecto.flotavehicular_webapp.models.Security.User;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,4 +150,24 @@ public class AuthenticationServiceImpl {
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
     }
+
+    public boolean validateToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        try {
+            String username = jwtService.extractUsername(token);
+
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            return jwtService.isTokenValid(token, user);
+
+        } catch (Exception e) {
+            log.error("Error during token validation: {}", e.getMessage());
+            return false;
+        }
+    }
+
 }

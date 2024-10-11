@@ -1,6 +1,6 @@
 package com.flotavehicular.security.repositories;
 
-import com.flotavehicular.security.models.User;
+import com.proyecto.flotavehicular_webapp.models.Security.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

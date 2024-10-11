@@ -1,10 +1,11 @@
 package com.flotavehicular.security;
 
-import com.flotavehicular.security.models.Role;
 import com.flotavehicular.security.repositories.IRoleRepository;
+import com.proyecto.flotavehicular_webapp.models.Security.Role;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableAsync
+@EntityScan(basePackages = {"com.proyecto.flotavehicular_webapp.models.Security"})
 public class SecurityApiApplication {
 
     public static void main(String[] args) {

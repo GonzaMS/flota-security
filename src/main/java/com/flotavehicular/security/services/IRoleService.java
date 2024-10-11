@@ -1,7 +1,8 @@
 package com.flotavehicular.security.services;
 
-import com.flotavehicular.security.dto.ChangeRoleRequestDTO;
-import com.flotavehicular.security.dto.RoleRequestDTO;
+
+import com.proyecto.flotavehicular_webapp.dto.security.ChangeRoleRequestDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.RoleRequestDTO;
 
 public interface IRoleService {
     void addRole(RoleRequestDTO roleRequestDTO);

@@ -1,12 +1,12 @@
 package com.flotavehicular.security.services.impl;
 
-import com.flotavehicular.security.dto.ChangeRoleRequestDTO;
-import com.flotavehicular.security.dto.RoleRequestDTO;
-import com.flotavehicular.security.models.Role;
-import com.flotavehicular.security.models.User;
 import com.flotavehicular.security.repositories.IRoleRepository;
 import com.flotavehicular.security.repositories.IUserRepository;
 import com.flotavehicular.security.services.IRoleService;
+import com.proyecto.flotavehicular_webapp.dto.security.ChangeRoleRequestDTO;
+import com.proyecto.flotavehicular_webapp.dto.security.RoleRequestDTO;
+import com.proyecto.flotavehicular_webapp.models.Security.Role;
+import com.proyecto.flotavehicular_webapp.models.Security.User;
 import org.springframework.stereotype.Service;
 
 @Service
