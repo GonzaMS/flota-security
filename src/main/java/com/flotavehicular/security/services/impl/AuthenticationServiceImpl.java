@@ -49,12 +49,15 @@ public class AuthenticationServiceImpl {
     private String activationUrl;
 
     public void register(RegistrationRequestDTO request) throws MessagingException {
-        var userRole = roleRepository.findByName("USER")
+        var userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
         log.info("User role: {}", userRole);
 
         var user = User.builder()
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
                 .username(request.getUsername())
+                .dateOfBirth(request.getDate_of_birth())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .accountNonLocked(false)
