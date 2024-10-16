@@ -1,5 +1,6 @@
 package com.flotavehicular.security.services.impl;
 
+import com.flotavehicular.security.config.ActivationUrlEmail;
 import com.flotavehicular.security.config.JwtService;
 import com.flotavehicular.security.enums.EmailTemplateName;
 import com.flotavehicular.security.repositories.IRoleRepository;
@@ -45,8 +46,10 @@ public class AuthenticationServiceImpl {
 
     private final JwtService jwtService;
 
-    @Value("${activation.url}")
-    private String activationUrl;
+    private final ActivationUrlEmail activationUrlEmail;
+
+//    @Value("${activation.url}")
+//    private String activationUrl;
 
     public void register(RegistrationRequestDTO request) throws MessagingException {
         var userRole = roleRepository.findByName("ROLE_USER")
@@ -72,13 +75,14 @@ public class AuthenticationServiceImpl {
 
     private void sendValidationEmail(User user) throws MessagingException {
         var newToken = generateSaveActivationToken(user);
-        // Send email
+
+        String dynamicActivationUrl = activationUrlEmail.getDynamicActivationUrl("security-microservice");
 
         emailService.sendEmail(
                 user.getEmail(),
                 user.getFullName(),
                 EmailTemplateName.ACTIVATE_ACCOUNT,
-                activationUrl,
+                dynamicActivationUrl,
                 newToken,
                 "Activate your account"
         );
