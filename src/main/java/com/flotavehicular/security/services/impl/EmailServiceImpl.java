@@ -14,7 +14,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 @RequiredArgsConstructor
@@ -32,20 +32,10 @@ public class EmailServiceImpl {
             String activationCode,
             String subject
     ) throws MessagingException {
-        // Send email
-        String templateName;
-        if (emailTemplateName == null) {
-            templateName = "confirm-email";
-        } else {
-            templateName = emailTemplateName.name();
-        }
+        String templateName = (emailTemplateName != null) ? emailTemplateName.name() : "confirm-email";
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(
-                mimeMessage,
-                MimeMessageHelper.MULTIPART_MODE_MIXED,
-                UTF_8.name()
-        );
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, UTF_8.name());
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("username", username);
@@ -60,7 +50,6 @@ public class EmailServiceImpl {
         helper.setSubject(subject);
 
         String template = templateEngine.process(templateName, context);
-
         helper.setText(template, true);
 
         mailSender.send(mimeMessage);

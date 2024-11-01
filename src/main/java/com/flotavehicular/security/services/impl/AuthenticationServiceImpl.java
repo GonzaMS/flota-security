@@ -32,17 +32,11 @@ import java.util.List;
 public class AuthenticationServiceImpl {
 
     private final IRoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final IUserRepository userRepository;
-
     private final ITokenRepository tokenRepository;
-
     private final EmailServiceImpl emailService;
-
     private final AuthenticationManager authenticationManager;
-
     private final JwtService jwtService;
 
     @Value("${activation.url}")
@@ -51,6 +45,7 @@ public class AuthenticationServiceImpl {
     public void register(RegistrationRequestDTO request) throws MessagingException {
         var userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
+
         log.info("User role: {}", userRole);
 
         var user = User.builder()
@@ -67,26 +62,25 @@ public class AuthenticationServiceImpl {
 
         userRepository.save(user);
         sendValidationEmail(user);
-
     }
 
     private void sendValidationEmail(User user) throws MessagingException {
         var newToken = generateSaveActivationToken(user);
-        // Send email
+
+        // URL de confirmación para activar la cuenta
+        String confirmationLink = String.format("%s/activate-account?token=%s", activationUrl, newToken);
 
         emailService.sendEmail(
                 user.getEmail(),
                 user.getFullName(),
                 EmailTemplateName.ACTIVATE_ACCOUNT,
-                activationUrl,
+                confirmationLink,
                 newToken,
-                "Activate your account"
+                "Activate your account" // Asunto del correo
         );
-
     }
 
     private String generateSaveActivationToken(User user) {
-        // Generate a token
         String generatedToken = generateActivationCode(6);
         var token = Token.builder()
                 .token(generatedToken)
@@ -96,17 +90,15 @@ public class AuthenticationServiceImpl {
                 .build();
 
         tokenRepository.save(token);
-
         return generatedToken;
     }
 
     private String generateActivationCode(int length) {
-        // Generate a random code
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder codeBuilder = new StringBuilder();
         SecureRandom secureRandom = new SecureRandom();
         for (int i = 0; i < length; i++) {
-            int randomIndex = secureRandom.nextInt(characters.length()); // 0..9
+            int randomIndex = secureRandom.nextInt(characters.length());
             codeBuilder.append(characters.charAt(randomIndex));
         }
         return codeBuilder.toString();
@@ -161,7 +153,6 @@ public class AuthenticationServiceImpl {
 
         try {
             String username = jwtService.extractUsername(token);
-
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -172,5 +163,4 @@ public class AuthenticationServiceImpl {
             return false;
         }
     }
-
 }
