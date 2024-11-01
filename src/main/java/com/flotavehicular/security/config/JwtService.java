@@ -85,15 +85,15 @@ public class JwtService {
             final String username = extractUsername(token);
             return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
         } catch (SignatureException e) {
-            log.error("Firma JWT no válida: {}", e.getMessage());
+            log.error("JWT invalid signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("Token JWT malformado: {}", e.getMessage());
+            log.error("JTW Bad format: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("El token JWT ha expirado: {}", e.getMessage());
+            log.error("Token expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("Token JWT no soportado: {}", e.getMessage());
+            log.error("JWT Not supported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims string vacío: {}", e.getMessage());
+            log.error("JWT Claims empty: {}", e.getMessage());
         }
         return false;
     }

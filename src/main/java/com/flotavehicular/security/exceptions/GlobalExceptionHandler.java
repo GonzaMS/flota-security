@@ -3,6 +3,7 @@ package com.flotavehicular.security.exceptions;
 import com.flotavehicular.security.exceptions.dto.ExceptionResponseDTO;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -100,18 +101,6 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponseDTO> handleException(Exception exp) {
-        log.error("An error occurred", exp);
-        return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(ExceptionResponseDTO.builder()
-                        .message("An error occurred")
-                        .error(exp.getMessage())
-                        .build());
-
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         String errorMessage = "El email ya está en uso. Por favor, utiliza un email diferente.";
@@ -122,5 +111,17 @@ public class GlobalExceptionHandler {
         body.put("error", ex.getRootCause().getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponseDTO> handleException(Exception exp) {
+        log.error("An error occurred", exp);
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(ExceptionResponseDTO.builder()
+                        .message("An error occurred")
+                        .error(exp.getMessage())
+                        .build());
+
     }
 }
