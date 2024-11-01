@@ -36,8 +36,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("/activate-account")
-    public void activateAccount(@RequestParam String token) throws MessagingException {
+    public ResponseEntity<?> activateAccount(@RequestParam String token) throws MessagingException {
         authenticationServiceImpl.activateAccount(token);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("activation", "Account activated successfully");
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/login")

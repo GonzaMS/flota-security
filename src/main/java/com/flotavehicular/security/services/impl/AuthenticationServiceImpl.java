@@ -72,17 +72,17 @@ public class AuthenticationServiceImpl {
 
     private void sendValidationEmail(User user) throws MessagingException {
         var newToken = generateSaveActivationToken(user);
-        // Send email
+
+        String activationLink = activationUrl.replace("{code}", newToken);
 
         emailService.sendEmail(
                 user.getEmail(),
                 user.getFullName(),
                 EmailTemplateName.ACTIVATE_ACCOUNT,
-                activationUrl,
+                activationLink,
                 newToken,
                 "Activate your account"
         );
-
     }
 
     private String generateSaveActivationToken(User user) {
