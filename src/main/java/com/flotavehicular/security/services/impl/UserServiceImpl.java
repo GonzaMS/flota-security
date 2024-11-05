@@ -1,9 +1,9 @@
 package com.flotavehicular.security.services.impl;
 
-import com.flotavehicular.security.dto.UserDto;
 import com.flotavehicular.security.repositories.IUserRepository;
 import com.flotavehicular.security.services.IUserService;
 import com.flotavehicular.security.utils.PageResponse;
+import com.proyecto.flotavehicular_webapp.dto.security.UserDto;
 import com.proyecto.flotavehicular_webapp.models.Security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

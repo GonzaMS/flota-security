@@ -1,8 +1,8 @@
 package com.flotavehicular.security.controllers;
 
-import com.flotavehicular.security.dto.UserDto;
 import com.flotavehicular.security.services.impl.UserServiceImpl;
 import com.flotavehicular.security.utils.PageResponse;
+import com.proyecto.flotavehicular_webapp.dto.security.UserDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
