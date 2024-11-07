@@ -7,7 +7,6 @@ import com.proyecto.flotavehicular_webapp.dto.security.UserDto;
 import com.proyecto.flotavehicular_webapp.models.Security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +22,10 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public PageResponse<UserDto> getAllUsers(int pageNumber, int pageSize) {
-        Page<User> usersPage = userRepository.findAll(PageRequest.of(pageNumber, pageSize));
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
-        List<User> activeUsers = usersPage.getContent().stream()
-                .filter(User::isEnabled)
-                .collect(Collectors.toList());
-
-        Page<User> activeUsersPage = PageableExecutionUtils.getPage(activeUsers, PageRequest.of(pageNumber, pageSize), activeUsers::size);
+        // Assuming `findAllByEnabled` is a method in IUserRepository that fetches only enabled users
+        Page<User> activeUsersPage = userRepository.findAllByEnabled(true, pageRequest);
 
         return mapToPageResponse(activeUsersPage);
     }
@@ -44,9 +40,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     private PageResponse<UserDto> mapToPageResponse(Page<User> userPage) {
-        List<UserDto> userDtos = userPage.stream()
+        List<UserDto> userDtos = userPage.getContent().stream()
                 .map(this::mapToDto)
-                .toList();
+                .collect(Collectors.toList());
 
         return PageResponse.of(
                 userDtos,
