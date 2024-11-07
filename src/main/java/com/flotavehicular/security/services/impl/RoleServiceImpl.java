@@ -9,6 +9,8 @@ import com.proyecto.flotavehicular_webapp.models.Security.Role;
 import com.proyecto.flotavehicular_webapp.models.Security.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class RoleServiceImpl implements IRoleService {
     private final IRoleRepository roleRepository;
@@ -45,13 +47,13 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public void removeRole(RoleRequestDTO roleRequestDTO) {
         User user = getUserById(roleRequestDTO.getUserId());
-        Role role = getRoleByName(roleRequestDTO.getRoleName());
+        Role roleToRemove = getRoleByName(roleRequestDTO.getRoleName());
 
-        if (!userHasRole(user, role)) {
+        boolean removed = user.getRoles().removeIf(r -> Objects.equals(r.getName(), roleToRemove.getName()));
+        if (!removed) {
             throw new RuntimeException("User does not have the role");
         }
 
-        user.getRoles().remove(role);
         userRepository.save(user);
     }
 
@@ -61,7 +63,7 @@ public class RoleServiceImpl implements IRoleService {
         Role oldRole = getRoleByName(changeRoleRequestDTO.getOldRoleName());
         Role newRole = getRoleByName(changeRoleRequestDTO.getNewRoleName());
 
-        if (!user.getRoles().remove(oldRole)) {
+        if (!user.getRoles().removeIf(r -> Objects.equals(r.getName(), oldRole.getName()))) {
             throw new RuntimeException("User does not have the old role");
         }
 
@@ -73,6 +75,6 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     private boolean userHasRole(User user, Role role) {
-        return user.getRoles().stream().anyMatch(r -> r.getName().equals(role.getName()));
+        return user.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), role.getName()));
     }
 }
