@@ -24,7 +24,6 @@ public class UserServiceImpl implements IUserService {
     public PageResponse<UserDto> getAllUsers(int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
-        // Assuming `findAllByEnabled` is a method in IUserRepository that fetches only enabled users
         Page<User> activeUsersPage = userRepository.findAllByEnabled(true, pageRequest);
 
         return mapToPageResponse(activeUsersPage);
