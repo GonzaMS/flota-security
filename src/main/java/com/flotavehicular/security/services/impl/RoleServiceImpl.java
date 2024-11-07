@@ -21,12 +21,14 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public void addRole(RoleRequestDTO roleRequestDTO) {
-        User user = userRepository.findById(roleRequestDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        Role role = roleRepository.findByName(roleRequestDTO.getRoleName()).orElseThrow(() -> new RuntimeException("Role not found only Driver, User or Admin roles are allowed"));
+        User user = userRepository.findById(roleRequestDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Role role = roleRepository.findByName(roleRequestDTO.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Role not found only Driver, User or Admin roles are allowed"));
 
-        if (!user.getRoles().contains(role)) {
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals(role.getName()))) {
             user.getRoles().add(role);
-        }else {
+        } else {
             throw new RuntimeException("User already has the role");
         }
 
@@ -35,12 +37,13 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public void removeRole(RoleRequestDTO roleRequestDTO) {
-        User user = userRepository.findById(roleRequestDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        Role role = roleRepository.findByName(roleRequestDTO.getRoleName()).orElseThrow(() -> new RuntimeException("Role not found only Driver, User or Admin roles are allowed"));
+        User user = userRepository.findById(roleRequestDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Role role = roleRepository.findByName(roleRequestDTO.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Role not found only Driver, User or Admin roles are allowed"));
 
-        if (user.getRoles().contains(role)) {
-            user.getRoles().remove(role);
-        }else {
+        boolean removed = user.getRoles().removeIf(r -> r.getName().equals(role.getName()));
+        if (!removed) {
             throw new RuntimeException("User does not have the role");
         }
 
@@ -58,13 +61,12 @@ public class RoleServiceImpl implements IRoleService {
         Role newRole = roleRepository.findByName(changeRoleRequestDTO.getNewRoleName())
                 .orElseThrow(() -> new RuntimeException("New role not found"));
 
-        if (user.getRoles().contains(oldRole)) {
-            user.getRoles().remove(oldRole);
-        } else {
+        boolean removed = user.getRoles().removeIf(r -> r.getName().equals(oldRole.getName()));
+        if (!removed) {
             throw new RuntimeException("User does not have the old role");
         }
 
-        if (!user.getRoles().contains(newRole)) {
+        if (user.getRoles().stream().noneMatch(r -> r.getName().equals(newRole.getName()))) {
             user.getRoles().add(newRole);
         }
 
