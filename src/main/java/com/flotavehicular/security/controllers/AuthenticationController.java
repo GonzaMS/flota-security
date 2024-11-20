@@ -51,16 +51,31 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationServiceImpl.authenticate(token));
     }
 
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken) {
-//        authenticationServiceImpl.logout(accessToken);
-//        return ResponseEntity.ok("Logout successful");
-//    }
-
     @PostMapping("/validate")
     public ResponseEntity<?> validate(@RequestHeader("Authorization") String token) {
         boolean isValid = authenticationServiceImpl.validateToken(token);
         return ResponseEntity.ok(isValid);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody String email) throws MessagingException {
+        authenticationServiceImpl.forgotPassword(email);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("forgot-password", "Password reset email sent successfully");
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<?> resetPassword(
+            @PathVariable String token,
+            @RequestParam String newPassword
+    ) {
+        authenticationServiceImpl.resetPassword(token, newPassword);
+        Map<String, String> response = new HashMap<>();
+        response.put("reset-password", "Password reset successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

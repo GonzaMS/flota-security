@@ -48,6 +48,9 @@ public class AuthenticationServiceImpl {
     @Value("${activation.url}")
     private String activationUrl;
 
+    @Value("${forgot_password_url}")
+    private String forgotPasswordUrl;
+
     public void register(RegistrationRequestDTO request) throws MessagingException {
         var userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
@@ -97,6 +100,7 @@ public class AuthenticationServiceImpl {
 
         tokenRepository.save(token);
 
+        log.info("Token generated: {}", generatedToken);
         return generatedToken;
     }
 
@@ -173,4 +177,53 @@ public class AuthenticationServiceImpl {
         }
     }
 
+    public void forgotPassword(String email) throws MessagingException {
+        // Limpia el email si viene en formato JSON
+        if (email.startsWith("{") && email.endsWith("}")) {
+            email = email.replaceAll("[{}\"]", "").split(":")[1].trim();
+        }
+
+        log.info("Forgot password for email: {}", email);
+
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        log.info("User found: {}", user);
+
+        var newToken = generateSaveActivationToken(user);
+
+        String resetPasswordLink = forgotPasswordUrl.replace("{code}", newToken);
+
+        log.info("Reset Password Link: {}", resetPasswordLink);
+
+        emailService.sendEmail(
+                user.getEmail(),
+                user.getFullName(),
+                EmailTemplateName.FORGOT_PASSWORD,
+                resetPasswordLink,
+                newToken,
+                "Reset your password"
+        );
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        log.info("Reset password for token: {}", token);
+        log.info("New password: {}", newPassword);
+
+        Token savedToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token not found"));
+
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            throw new RuntimeException("Token has expired. Please request a new password reset.");
+        }
+
+        User user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
+    }
 }
